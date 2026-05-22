@@ -1,0 +1,22 @@
+GET http://localhost:3001/student?email=s350714@studenti.polito.it
+
+###
+
+GET http://localhost:3001/courses
+
+###
+
+GET http://localhost:3001/studyplan?studentID=S350714
+
+###
+
+POST http://localhost:3001/student
+Content-Type: application/json
+
+{
+    "Matricola": "S350715",
+    "Name": "Gabriele",
+    "LastName": "Piazza",
+    "Email": "gabriele.piazza@example.com",
+    "Password": "gabriele123"
+}
