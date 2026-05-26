@@ -3,7 +3,7 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import {check, validationResult} from 'express-validator'; // validation middleware
-import { addStudent, getCourses, getStudentsByEmail, getStudyPlanByStudentID, getStudent } from "./dao.js";
+import { getCourses, getStudyPlanByStudentID, getStudent, addStudyPlan, updateStudyPlan, deleteStudyPlan } from "./dao.js";
 
 // init express
 const app = new express();
@@ -29,12 +29,18 @@ import LocalStrategy from 'passport-local';                   // authentication 
 /** Set up authentication strategy to search in the DB a user with a matching password.
  * The user object will contain other information extracted by the method userDao.getUserByCredentials() (i.e., id, username, name).
  **/
-passport.use(new LocalStrategy(async function verify(username, password, callback) {
-    const user = await userDao.getUserByCredentials(username, password)
-    if(!user)
-      return callback(null, false, 'Incorrect username or password');
-
-    return callback(null, user); // NOTE: user info in the session (all fields returned by userDao.getUserByCredentials(), i.e, id, username, name)
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+}, async function verify(email, password, callback) {
+    try {
+        const user = await getStudent(email, password);
+        if(!user)
+            return callback(null, false, 'Incorrect email or password');
+        return callback(null, user);
+    } catch(err) {
+        return callback(err);
+    }
 }));
 
 // Serializing in the session the user object given from LocalStrategy(verify).
@@ -153,14 +159,64 @@ app.get("/api/courses", async (req, res) => {
 });
 
 // GET /api/plan
-app.get("/api/plan", async (req, res) => {
+app.get("/api/plan", isLoggedIn, async (req, res) => {
   try{
-    const studyPlan = await getStudyPlanByStudentID(req.query.studentID);
+    const studyPlan = await getStudyPlanByStudentID(req.user.Matricola);
     if(studyPlan.error){
       res.status(400).json(studyPlan);
     }
     else {
       res.status(200).json(studyPlan);
+    }
+  }
+  catch(error){
+    res.status(500).json({error: "Internal Server Error"});
+  }
+});
+
+// POST /api/plan
+app.post("/api/plan", isLoggedIn, async (req, res) => {
+  try{
+    const { typeofPlan, CourseCodes } = req.body;
+    const result = await addStudyPlan(req.user.Matricola, typeofPlan, CourseCodes);
+    if(result.error){
+      res.status(400).json(result);
+    }
+    else {
+      res.status(201).json(result);
+    }
+  }
+  catch(error){
+    res.status(500).json({error: "Internal Server Error"});
+  }
+});
+
+// PUT /api/plan
+app.put("/api/plan", isLoggedIn, async (req, res) => {
+  try{
+    const { CourseCodes, typeofPlan } = req.body;
+    const result = await updateStudyPlan(req.user.Matricola, CourseCodes, typeofPlan);
+    if(result.error){
+      res.status(400).json(result);
+    }
+    else {
+      res.status(200).json(result);
+    }
+  }
+  catch(error){
+    res.status(500).json({error: "Internal Server Error"});
+  }
+});
+
+// DELETE /api/plan
+app.delete("/api/plan", isLoggedIn, async (req, res) => {
+  try{
+    const result = await deleteStudyPlan(req.user.Matricola);
+    if(result.error){
+      res.status(400).json(result);
+    }
+    else {
+      res.status(200).json(result);
     }
   }
   catch(error){

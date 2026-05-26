@@ -6,8 +6,8 @@ POST http://localhost:3001/api/sessions
 Content-Type: application/json
 
 {
-    "email": "",
-    "password": ""
+    "email": "gabriele.piazza@example.com",
+    "password": "gabriele"
 }
 
 ###
@@ -28,8 +28,8 @@ PUT http://localhost:3001/api/plan
 Content-Type: application/json
 
 {
-    "StudentMatricola": "S350715",
-    "CourseCodes": ["02GOLOV", "02LSEOV", "01SQLOV"]
+    "CourseCodes": ["02GOLOV", "02LSEOV", "01SQLOV"],
+    "typeofPlan": "full-time"
 }
 
 ###

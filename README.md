@@ -9,22 +9,52 @@
 
 ## API Server
 
-- POST `/api/something`
-  - request parameters and request body content
-  - response body content
-- GET `/api/something`
-  - request parameters
-  - response body content
-- POST `/api/something`
-  - request parameters and request body content
-  - response body content
-- ...
+- POST `/api/sessions`
+  - request body: `{email: string, password: string}`
+  - response: student object with Matricola, username, Name on success; error message on failure
+
+- GET `/api/sessions/current`
+  - request parameters: none
+  - response: current logged-in user object, or 401 error if not authenticated
+
+- DELETE `/api/sessions/current`
+  - request parameters: none
+  - response: empty response on successful logout
+
+- POST `/api/student`
+  - request body: `{Matricola: string, Name: string, LastName: string, Email: string, Password: string}`
+  - response: success message or error
+
+- GET `/api/courses`
+  - request parameters: none
+  - response: array of course objects with Code, Name, Credits, MaxStudents, PreparatoryCourse, Incompatibilities, StudentsEnrolled
+
+- GET `/api/plan`
+  - requires authentication
+  - request parameters: none
+  - response: array of study plan objects for current logged-in student
+
+- POST `/api/plan`
+  - requires authentication
+  - request body: `{typeofPlan: string, CourseCodes: string[]}`
+  - response: success message or error
+
+- PUT `/api/plan`
+  - requires authentication
+  - request body: `{StudentMatricola: string, CourseCodes: string[]}`
+  - response: success message or error
+
+- DELETE `/api/plan`
+  - requires authentication
+  - request parameters: none
+  - response: success message or error
 
 ## Database Tables
 
-- Table `users` - contains xx yy zz
-- Table `something` - contains ww qq ss
-- ...
+- Table `Student` - contains Matricola, Name, Surname, Email, HashedPassword, Salt, PlanType
+- Table `Course` - contains Code, Name, Credits, MaxStudents, PreparatoryCourse
+- Table `Incompatibility` - contains CourseCode1, CourseCode2
+- Table `StudyPlan` - contains StudentID, CourseCode
 
 ## Main React Components
 
