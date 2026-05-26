@@ -36,6 +36,7 @@ Content-Type: application/json
 
 POST http://localhost:3001/api/plan
 Content-Type: application/json
+
 {
     "typeofPlan": "full-time",
     "CourseCodes": ["02GOLOV", "02LSEOV", "01OTWOV"]
